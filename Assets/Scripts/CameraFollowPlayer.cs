@@ -5,20 +5,20 @@ using UnityEngine;
 public class CameraFollowPlayer : MonoBehaviour
 {
     public GameObject player;
-    public Vector3 offset = new Vector3(0, 2, -10);
+    private Vector3 offset;
 
     void Start()
     {
-        
+        offset = transform.position - player.transform.position;
     }
 
     // Update is called once per frame
     void Update()
     {
-        //transform.position = 
-        //    player.transform.position + offset;
-
         transform.position = 
-            player.transform.rotation * offset;
+            player.transform.position + offset;
+
+        //transform.position = 
+        //    player.transform.rotation * offset;
     }
 }
