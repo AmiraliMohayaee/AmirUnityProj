@@ -1,11 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.Events;
+using System;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerBehaviour : MonoBehaviour
 {
+    [SerializeField]
+    private OnImpact m_onImpact;
+    //public OnImpact OnImpact => m_onImpact;
+
+    private UnityAction m_callback;
+
+
     [SerializeField]
     private GameObject m_bulletTemplate;
 
@@ -16,6 +24,9 @@ public class PlayerBehaviour : MonoBehaviour
 
     private GameObject m_bullet;
     private Rigidbody m_bulletBody;
+
+    [SerializeField]
+    private ParticleSystem m_particleSystem;
 
     //public Rigidbody BulletBody
     //{
@@ -29,7 +40,14 @@ public class PlayerBehaviour : MonoBehaviour
     //    }
     //    set => m_bulletBody = value;
     //}
-    
+
+    private void Start()
+    {
+        m_callback = ActivateParticles;
+
+        m_onImpact.AddListener(m_callback);
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -47,4 +65,22 @@ public class PlayerBehaviour : MonoBehaviour
 
         Camera.main.transform.position += new Vector3(xMovement * 2, yMovement * 2);
     }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        m_onImpact.Invoke();
+        Destroy(gameObject);
+    }
+
+    private void ActivateParticles()
+    {
+        m_particleSystem.Play();
+        m_onImpact.RemoveListener(ActivateParticles);
+    }
+}
+
+[Serializable]
+public class OnImpact : UnityEvent
+{
+
 }
